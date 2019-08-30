@@ -1,31 +1,18 @@
 <?php
-
     include 'res/head.php';
-    include 'res/Nav.php';
-    include 'model/Model.php';
-
-    $controller = new Model();
-    class Index{
-        public $model;
-
-            public function __construct(){
-                $this->model = new Model();
-            }
-
-            public function getStations(){
-                return $this->model->testDB();
-            }
-
-    }
-    $self = new Index();
-    $stations = $self->getStations();
+    include 'view/Nav.php';
 ?>
-    <html>
-    <head>
-        <link rel="stylesheet" type="text/css" href="style.css">
-        <script src="functions.js"></script>
-    </head>
-    <body>
+<html>
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+<div class="wrapper">
     <div class="navbar">
-        <?php echo $stations; ?>
+        <?php echo getNavbar(); ?>
     </div>
+</div>
+<script src="../js/jquery.min.js"></script>
+
+</body>
+</html>
