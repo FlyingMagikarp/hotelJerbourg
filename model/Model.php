@@ -68,11 +68,6 @@ class Model
         return $results;
     }
 
-    //get single room using id
-    public function getRoom($id){
-
-    }
-
     //get room classes
     public function getClasses(){
         $conn = $this->dbConnection();
@@ -93,5 +88,28 @@ class Model
 
         $conn->close();
         return $results;
+    }
+
+
+    //Reservation
+    //get all reservations
+    public function getReservations(){
+        $conn = $this->dbConnection();
+
+        $sql = "SELECT * FROM reservations WHERE Inactive = false AND Cancelled = false";
+        $results = $conn->query($sql);
+
+        $conn->close();
+        return $results;
+    }
+
+    //add new Reservation
+    public function addReservation($reservation){
+        $conn = $this->dbConnection();
+
+        $sql = "INSERT INTO reservations (RoomID, GuestID, DateReservation, DateStart, DateEnd, Paid, Cancelled, Active, Inactive) VALUES ('".$reservation->roomID."','".$reservation->guestID."','".$reservation->dateReservation."','".$reservation->dateStart."','".$reservation->dateEnd."',false,false,false,false)";
+        $conn->query($sql);
+
+        $conn->close();
     }
 }

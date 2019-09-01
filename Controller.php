@@ -28,6 +28,17 @@ class Controller{
         return $dataArray;
     }
 
+    public function getGuestWithId($id){
+        $dataArray = $this->getGuests();
+        $guest = 0;
+        for($i=0;$i<sizeof($dataArray);$i++){
+            if($dataArray[$i]->id==$id){
+                $guest = $dataArray[$i];
+            }
+        }
+        return $guest;
+    }
+
 
     //Room
     //get all rooms
@@ -56,10 +67,42 @@ class Controller{
     public function checkRoomStatus($roomID){
         $dataDB = $this->model->checkRoomStatus($roomID);
 
-        if($dataDB->fetch_assoc()==NULL){
+        if(!$dataDB || $dataDB->fetch_assoc()==NULL){
             return "Free";
         } else {
             return "Booked";
         }
+    }
+
+    public function getRoomWithId($id){
+        $dataArray = $this->getRooms();
+        $room = 0;
+        for($i=0;$i<sizeof($dataArray);$i++){
+            if($dataArray[$i]->id==$id){
+                $room = $dataArray[$i];
+            }
+        }
+        return $room;
+    }
+
+
+    //Reservations
+    //get all reservations
+    public function getReservations(){
+        $dataDB = $this->model->getReservations();
+        $dataArray = array();
+        if($dataDB == false){
+            return;
+        }
+        while($row = $dataDB->fetch_assoc()){
+            $reservation = new Model_Reservation($row['RoomID'],$row['GuestID'],$row['DateReservation'],$row['DateStart'],$row['DateEnd'],$row['ID'],$row['Paid'],$row['Cancelled'],$row['Active'],$row['Inactive']);
+            array_push($dataArray,$reservation);
+        }
+        return $dataArray;
+    }
+
+    //add new Reservation
+    public function addReservation($reservation){
+        $this->model->addReservation($reservation);
     }
 }

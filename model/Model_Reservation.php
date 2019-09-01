@@ -8,13 +8,12 @@ class Model_Reservation
     public $dateReservation;
     public $dateStart;
     public $dateEnd;
-    public $amountDays;
     public $paid;
     public $cancelled;
     public $active;
     public $inactive;
 
-    public function __construct($roomID, $guestID, $dateReservation, $dateStart, $dateEnd, $amountDays, $id = 0, $paid = false, $cancelled = false, $active = false, $inactive = false)
+    public function __construct($roomID, $guestID, $dateReservation, $dateStart, $dateEnd, $id = 0, $paid = false, $cancelled = false, $active = false, $inactive = false)
     {
         $this->id = $id;
         $this->roomID = $roomID;
@@ -22,7 +21,6 @@ class Model_Reservation
         $this->dateReservation = $dateReservation;
         $this->dateStart = $dateStart;
         $this->dateEnd = $dateEnd;
-        $this->amountDays = $amountDays;
         $this->paid = $paid;
         $this->cancelled = $cancelled;
         $this->active = $active;
