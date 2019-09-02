@@ -23,11 +23,70 @@ class View_ReservationsOverview
     public function getRoomWithId($id){
         return $this->controller->getRoomWithId($id);
     }
+
+    public function togglePaid($value,$id){
+        $this->controller->reservationTogglePaid($value,$id);
+    }
+
+    public function toggleCancelled($value,$id){
+        $this->controller->reservationToggleCancelled($value,$id);
+    }
+
+    public function toggleActive($value,$id){
+        $this->controller->reservationToggleActive($value,$id);
+        if($value){
+            $this->controller->reservationToggleInactive(false,$id);
+        }
+    }
+
+    public function toggleInactive($value,$id){
+        $this->controller->reservationToggleInactive($value,$id);
+        if($value){
+            $this->controller->reservationToggleActive(false,$id);
+        }
+    }
 }
 
 
 $self = new View_ReservationsOverview();
 $reservationsData = $self->getReservations();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if(isset($_POST['setPaid'])) {
+        if ($_POST['setPaid'] == 'true') {
+            $self->togglePaid(false,$_POST['id']);
+        } elseif ($_POST['setPaid'] == 'false') {
+            $self->togglePaid(true,$_POST['id']);
+        }
+    }
+
+    if(isset($_POST['setCancelled'])) {
+        if ($_POST['setCancelled'] == 'true') {
+            $self->toggleCancelled(false,$_POST['id']);
+        } elseif ($_POST['setCancelled'] == 'false') {
+            $self->toggleCancelled(true,$_POST['id']);
+        }
+    }
+
+    if(isset($_POST['setActive'])) {
+        if ($_POST['setActive'] == 'true') {
+            $self->toggleActive(false,$_POST['id']);
+        } elseif ($_POST['setActive'] == 'false') {
+            $self->toggleActive(true,$_POST['id']);
+        }
+    }
+
+    if(isset($_POST['setInactive'])) {
+        if ($_POST['setInactive'] == 'true') {
+            $self->toggleInactive(false,$_POST['id']);
+        } elseif ($_POST['setInactive'] == 'false') {
+            $self->toggleInactive(true,$_POST['id']);
+        }
+    }
+
+    header("Location: View_ReservationsOverview.php");
+    exit();
+}
 ?>
 
 <html>
@@ -77,10 +136,50 @@ $reservationsData = $self->getReservations();
                 <td><?php echo ($reservationsData[$i]->cancelled) ? "yes" : "no"; ?></td>
                 <td><?php echo ($reservationsData[$i]->active) ? "yes" : "no"; ?></td>
                 <td><?php echo ($reservationsData[$i]->inactive) ? "yes" : "no"; ?></td>
-                <td>toggle<?php  ?></td>
-                <td>toggle<?php  ?></td>
-                <td>toggle<?php  ?></td>
-                <td>toggle<?php  ?></td>
+                <td>
+                    <?php if($reservationsData[$i]->paid): ?>
+                        <form name="setPaidFalse" action=<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?> method="post">
+                            <input name="id" value="<?php echo $reservationsData[$i]->id ?>" hidden><input name="setPaid" value="true" hidden><button type="submit" class="btn btn-sm btn-dark">Toggle Paid</button>
+                        </form>
+                    <?php else: ?>
+                        <form name="setPaidTrue" action=<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?> method="post">
+                            <input name="id" value="<?php echo $reservationsData[$i]->id ?>" hidden><input name="setPaid" value="false" hidden><button type="submit" class="btn btn-sm btn-dark">Toggle Paid</button>
+                        </form>
+                    <?php endif; ?>
+                </td>
+                <td>
+                    <?php if($reservationsData[$i]->cancelled): ?>
+                        <form name="setCancelledFalse" action=<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?> method="post">
+                            <input name="id" value="<?php echo $reservationsData[$i]->id ?>" hidden><input name="setCancelled" value="true" hidden><button type="submit" class="btn btn-sm btn-dark">Toggle Cancelled</button>
+                        </form>
+                    <?php else: ?>
+                        <form name="setCancelledTrue" action=<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?> method="post">
+                            <input name="id" value="<?php echo $reservationsData[$i]->id ?>" hidden><input name="setCancelled" value="false" hidden><button type="submit" class="btn btn-sm btn-dark">Toggle Cancelled</button>
+                        </form>
+                    <?php endif; ?>
+                </td>
+                <td>
+                    <?php if($reservationsData[$i]->active): ?>
+                        <form name="setActiveFalse" action=<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?> method="post">
+                            <input name="id" value="<?php echo $reservationsData[$i]->id ?>" hidden><input name="setActive" value="true" hidden><button type="submit" class="btn btn-sm btn-dark">Toggle Active</button>
+                        </form>
+                    <?php else: ?>
+                        <form name="setActiveTrue" action=<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?> method="post">
+                            <input name="id" value="<?php echo $reservationsData[$i]->id ?>" hidden><input name="setActive" value="false" hidden><button type="submit" class="btn btn-sm btn-dark">Toggle Active</button>
+                        </form>
+                    <?php endif; ?>
+                </td>
+                <td>
+                    <?php if($reservationsData[$i]->inactive): ?>
+                        <form name="setInactiveFalse" action=<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?> method="post">
+                            <input name="id" value="<?php echo $reservationsData[$i]->id ?>" hidden><input name="setInactive" value="true" hidden><button type="submit" class="btn btn-sm btn-dark">Toggle Inactive</button>
+                        </form>
+                    <?php else: ?>
+                        <form name="setInactiveTrue" action=<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?> method="post">
+                            <input name="id" value="<?php echo $reservationsData[$i]->id ?>" hidden><input name="setInactive" value="false" hidden><button type="submit" class="btn btn-sm btn-dark">Toggle Inactive</button>
+                        </form>
+                    <?php endif; ?>
+                </td>
             </tr>
         <?php endfor; ?>
     </table>

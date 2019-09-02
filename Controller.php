@@ -105,4 +105,98 @@ class Controller{
     public function addReservation($reservation){
         $this->model->addReservation($reservation);
     }
+
+    //toggle paid
+    public function reservationTogglePaid($value,$id){
+        $this->model->reservationTogglePaid($value,$id);
+    }
+
+    //toggle cancelled
+    public function reservationToggleCancelled($value,$id){
+        $this->model->reservationToggleCancelled($value,$id);
+    }
+
+    //toggle active
+    public function reservationToggleActive($value,$id){
+        $this->model->reservationToggleActive($value,$id);
+    }
+
+    //toggle inactive
+    public function reservationToggleInactive($value,$id){
+        $this->model->reservationToggleInactive($value,$id);
+    }
+
+
+    //Reports
+    //best customers
+    public function getCustomerReport(){
+        $guestData = $this->getGuests();
+        $reportData = array();
+        for($i=0;$i<sizeof($guestData);$i++){
+            $dataDB = $this->model->countReservationsWithGuestId($guestData[$i]->id);
+            $tmp = $dataDB->fetch_assoc();
+            array_push($reportData,$tmp);
+        }
+
+
+        usort($reportData, function($a, $b) {
+            return $a['count'] - $b['count'];
+        });
+
+        $reportData = array_reverse($reportData);
+
+        return $reportData;
+    }
+
+    //profits per class per month
+    public function getProfitsPerClass(){
+        $classes = $this->getClasses();
+        $monthData = array(
+            "2019-1-1",
+            "2019-2-1",
+            "2019-3-1",
+            "2019-4-1",
+            "2019-5-1",
+            "2019-6-1",
+            "2019-7-1",
+            "2019-8-1",
+            "2019-9-1",
+            "2019-10-1",
+            "2019-11-1",
+            "2019-12-1",
+            "2020-1-1",
+        );
+        $profitData = array();
+
+        for($i=0;$i<sizeof($classes);$i++){
+            $tmpArr = array($classes[$i]->id,0);
+            $tmpProfitArr = array();
+            for($j=0;$j<sizeof($monthData)-1;$j++){
+                $tmpProfit = 0;
+                $data = $this->model->getReservationsByClassAndMonth($classes[$i]->id,$monthData[$j],$monthData[$j+1]);
+                $dataArray = array();
+                while($row = $data->fetch_assoc()){
+                    array_push($dataArray,$row);
+                }
+                if(sizeof($dataArray) == 0) {
+                    $tmpProfit = 0;
+                }else{
+                    for ($k = 0; $k < sizeof($dataArray); $k++) {
+                        $data = $dataArray[$k];
+                        $startDat = new DateTime($data['DateStart']);
+                        $endDat = new DateTime($data['DateEnd']);
+                        $days = date_diff($startDat, $endDat)->format('%a');
+                        $price = $data['Price'];
+                        $total = $days * $price;
+                        $tmpProfit += $total;
+                    }
+                }
+                array_push($tmpProfitArr,$tmpProfit);
+            }
+
+            array_push($profitData,$tmpProfitArr);
+        }
+
+        return $profitData;
+    }
 }

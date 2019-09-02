@@ -96,7 +96,30 @@ class Model
     public function getReservations(){
         $conn = $this->dbConnection();
 
-        $sql = "SELECT * FROM reservations WHERE Inactive = false AND Cancelled = false";
+        //$sql = "SELECT * FROM reservation WHERE Inactive = false AND Cancelled = false";
+        $sql = "SELECT * FROM reservation";
+        $results = $conn->query($sql);
+
+        $conn->close();
+        return $results;
+    }
+
+    //get reservation by id
+    public function getReservationWithId($id){
+        $conn = $this->dbConnection();
+
+        $sql = "SELECT * FROM reservation WHERE Cancelled = false AND ID = '".$id."'";
+        $results = $conn->query($sql);
+
+        $conn->close();
+        return $results;
+    }
+
+    //get all reservations by guestId
+    public function countReservationsWithGuestId($guestid){
+        $conn = $this->dbConnection();
+
+        $sql = "SELECT GuestID, COUNT(ID) AS count FROM reservation WHERE Cancelled = false AND Paid = true AND GuestID = '".$guestid."'";
         $results = $conn->query($sql);
 
         $conn->close();
@@ -107,9 +130,55 @@ class Model
     public function addReservation($reservation){
         $conn = $this->dbConnection();
 
-        $sql = "INSERT INTO reservations (RoomID, GuestID, DateReservation, DateStart, DateEnd, Paid, Cancelled, Active, Inactive) VALUES ('".$reservation->roomID."','".$reservation->guestID."','".$reservation->dateReservation."','".$reservation->dateStart."','".$reservation->dateEnd."',false,false,false,false)";
+        $sql = "INSERT INTO reservation (RoomID, GuestID, DateReservation, DateStart, DateEnd, Paid, Cancelled, Active, Inactive) VALUES ('".$reservation->roomID."','".$reservation->guestID."','".$reservation->dateReservation."','".$reservation->dateStart."','".$reservation->dateEnd."',false,false,false,false)";
         $conn->query($sql);
 
         $conn->close();
+    }
+
+    //toggle paid
+    public function reservationTogglePaid($value,$id){
+        $conn = $this->dbConnection();
+
+        $conn = $this->dbConnection();
+        $sql = "UPDATE reservation SET Paid = '".$value."' WHERE ID = '".$id."'";
+        $conn->query($sql);
+    }
+
+    //toggle cancelled
+    public function reservationToggleCancelled($value,$id){
+        $conn = $this->dbConnection();
+
+        $conn = $this->dbConnection();
+        $sql = "UPDATE reservation SET Cancelled = '".$value."' WHERE ID = '".$id."'";
+        $conn->query($sql);
+    }
+
+    //toggle active
+    public function reservationToggleActive($value,$id){
+        $conn = $this->dbConnection();
+
+        $conn = $this->dbConnection();
+        $sql = "UPDATE reservation SET Active = '".$value."' WHERE ID = '".$id."'";
+        $conn->query($sql);
+    }
+
+    //toggle inactive
+    public function reservationToggleInactive($value,$id){
+        $conn = $this->dbConnection();
+
+        $conn = $this->dbConnection();
+        $sql = "UPDATE reservation SET Inactive = '".$value."' WHERE ID = '".$id."'";
+        $conn->query($sql);
+    }
+
+    public function getReservationsByClassAndMonth($class,$startdate,$enddate){
+        $conn = $this->dbConnection();
+
+        $sql = "SELECT * FROM reservation as r JOIN room as c on r.RoomID = c.ID WHERE Cancelled = false AND Paid = true AND c.Class = '".$class."' AND DateStart < '".$enddate."' AND DateStart >= '".$startdate."'";
+        $results = $conn->query($sql);
+
+        $conn->close();
+        return $results;
     }
 }
